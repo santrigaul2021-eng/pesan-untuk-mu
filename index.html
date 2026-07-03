@@ -2,311 +2,386 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Untuk Chika • Hafiz</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>Untuk Inez • Hafiz</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&amp;family=Inter:wght@300;400;500&amp;display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        :root { --pink: #f8c1d4; --rose: #f4a8b8; }
+        :root {
+            --pink: #f9c2d0;
+            --purple: #d8b4fe;
+            --blue: #a5b4fc;
+            --gold: #facc15;
+        }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
         body {
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #1a0f2e, #2a1b4a);
-            color: #fff;
-            min-height: 100vh;
+            font-family: 'Inter', system-ui, sans-serif;
             overflow-x: hidden;
-            touch-action: manipulation;
+            background-color: #000;
         }
-
-        #bg-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; }
-        .aurora {
-            position: fixed; inset: 0;
-            background: linear-gradient(180deg, rgba(138,43,226,0.18), rgba(255,105,180,0.15), rgba(135,206,250,0.12));
-            animation: auroraShift 30s ease infinite;
-            z-index: -1;
+        
+        .heading-font {
+            font-family: 'Playfair Display', sans-serif;
         }
-        @keyframes auroraShift { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
-
-        #loading {
-            position: fixed; inset: 0; background: #1a0f2e; display: flex; align-items: center; justify-content: center; z-index: 10000; transition: opacity 1.8s;
-        }
-        .loading-text { font-size: 1.7rem; text-align: center; color: #f8c1d4; }
 
         .glass {
-            background: rgba(255,255,255,0.12);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255,255,255,0.2);
-            border-radius: 28px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
         }
 
-        section { min-height: 100vh; padding: 2rem 1.2rem; display: none; align-items: center; justify-content: center; position: relative; }
-        .container { width: 100%; max-width: 680px; }
-
-        h1 { font-size: 2.55rem; line-height: 1.15; margin-bottom: 1.5rem; }
-        p { font-size: 1.18rem; line-height: 1.82; }
-
-        .btn {
-            display: block; width: 100%; max-width: 320px; margin: 1.8rem auto 0;
-            padding: 18px; font-size: 1.25rem; font-weight: 600;
-            border: none; border-radius: 9999px;
-            background: linear-gradient(90deg, #f4a8b8, #f8c1d4);
-            color: white; box-shadow: 0 10px 30px rgba(248,193,212,0.5);
-        }
-        .btn:active { transform: scale(0.96); }
-
-        .btn-reply {
-            background: linear-gradient(90deg, #833ab4, #fd1d1d, #fcb045);
-            margin-top: 2.5rem;
-            font-size: 1.2rem;
+        .aurora-bg {
+            background: linear-gradient(45deg, #4f46e5, #c026d3, #db2777, #7e22ce);
+            background-size: 200% 200%;
+            animation: aurora 15s ease infinite;
         }
 
-        #story-text { white-space: pre-line; min-height: 380px; }
-
-        .timeline-item {
-            opacity: 0; transform: translateY(30px); transition: all 0.8s ease; margin: 1.8rem 0;
-        }
-        .timeline-item.visible { opacity: 1; transform: translateY(0); }
-
-        #btn-belum {
-            position: absolute; background: #666; padding: 14px 32px; font-size: 1.15rem;
+        @keyframes aurora {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
 
-        @media (max-width: 480px) {
-            h1 { font-size: 2.35rem; }
-            p { font-size: 1.13rem; }
+        .heart-float {
+            position: fixed;
+            bottom: -50px;
+            font-size: 1.5rem;
+            color: #f9c2d0;
+            text-shadow: 0 0 10px #f9c2d0;
+            will-change: transform, opacity;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .neon-glow {
+            text-shadow: 0 0 10px #f9c2d0, 0 0 20px #c026d3;
+        }
+
+        .section-fade {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        
+        .section-fade.active {
+            opacity: 1;
+            transform: translateY(0);
         }
     </style>
 </head>
-<body>
+<body class="text-white min-h-screen relative">
+    <!-- Background Canvas -->
+    <canvas id="canvas" class="fixed inset-0 z-0 pointer-events-none"></canvas>
 
-    <canvas id="bg-canvas"></canvas>
-    <div class="aurora"></div>
-
-    <!-- Loading -->
-    <div id="loading">
-        <div class="loading-text" id="loading-text">Halo Chika...</div>
+    <!-- Opening Screen -->
+    <div id="opening" class="fixed inset-0 z-50 flex items-center justify-center aurora-bg flex-col gap-8 transition-opacity duration-700">
+        <div class="text-center px-6 max-w-lg">
+            <div class="mb-8">
+                <h1 class="heading-font text-4xl md:text-7xl font-bold tracking-tight neon-glow text-white">
+                    Halo Inez Chika Meilany...
+                </h1>
+            </div>
+            <p class="text-lg md:text-2xl opacity-90 mb-12 font-light">
+                Aku membuat sesuatu khusus untukmu.
+            </p>
+            <button onclick="startJourney()" 
+                    class="px-8 py-4 text-lg font-medium rounded-2xl glass border border-white/30 active:scale-95 transition-transform shadow-2xl shadow-pink-500/30 flex items-center gap-3 mx-auto group">
+                <span>Buka Hatiku</span>
+                <i class="fa-solid fa-arrow-right"></i>
+            </button>
+        </div>
     </div>
 
-    <!-- Sec 1 -->
-    <section id="sec1" style="display:flex;">
-        <div class="container glass" style="padding: 2.8rem 2rem; text-align:center;">
-            <h1>Hai Chika 👋</h1>
-            <p>Mungkin ini terdengar sedikit berbeda dari biasanya.<br>Tapi aku berharap kamu mau meluangkan beberapa menit untuk membaca semuanya sampai akhir.</p>
-            <button onclick="nextSection(2)" class="btn">Lanjut</button>
-        </div>
-    </section>
+    <!-- Main Content -->
+    <div id="main-content" class="hidden relative z-10 min-h-screen">
 
-    <!-- Sec 2 -->
-    <section id="sec2">
-        <div class="container">
-            <div class="glass" style="padding: 2.8rem 2rem;">
-                <p id="story-text"></p>
+        <!-- Story Section -->
+        <section id="story" class="min-h-screen flex flex-col justify-center relative px-6 py-12">
+            <div class="max-w-2xl mx-auto text-center space-y-8">
+                <div class="space-y-6">
+                    <p id="story-1" class="section-fade text-xl md:text-3xl leading-relaxed font-light opacity-90">
+                        Kita mungkin tidak sering bersama.
+                    </p>
+                    <p id="story-2" class="section-fade text-xl md:text-3xl leading-relaxed font-light opacity-90 hidden">
+                        Mungkin aku bukan orang yang paling spesial di matamu.
+                    </p>
+                    <p id="story-3" class="section-fade text-xl md:text-3xl leading-relaxed font-light opacity-90 hidden">
+                        Tapi ada satu hal yang sudah lama ingin kusampaikan.
+                    </p>
+                    <p id="story-4" class="section-fade text-xl md:text-3xl leading-relaxed font-light opacity-90 hidden">
+                        Semakin waktu berjalan, aku semakin yakin dengan perasaanku.
+                    </p>
+                </div>
+
+                <button id="next-btn" onclick="nextStory()" 
+                        class="mt-8 px-6 py-4 rounded-2xl glass text-md flex items-center gap-3 mx-auto active:scale-95 transition-transform">
+                    Lanjutkan Cerita <i class="fa-solid fa-heart text-pink-300"></i>
+                </button>
             </div>
-            <button onclick="nextSection(3)" class="btn">Lanjut ke Perjalanan</button>
-        </div>
-    </section>
+        </section>
 
-    <!-- Sec 3 -->
-    <section id="sec3">
-        <div class="container">
-            <h2 style="text-align:center; margin-bottom:2rem;">Perjalanan Hati</h2>
-            <div id="timeline">
-                <div class="timeline-item glass" style="padding:1.8rem;">Aku menjalani hidup seperti biasa.</div>
-                <div class="timeline-item glass" style="padding:1.8rem;">Hingga akhirnya sekarang aku memilih menjadi seorang santri.</div>
-                <div class="timeline-item glass" style="padding:1.8rem;">Hari-hariku kini dipenuhi dengan belajar agama, mengaji, dan berusaha menjadi pribadi yang lebih baik.</div>
-                <div class="timeline-item glass" style="padding:1.8rem;">Di tengah perjalanan itu... Sesekali aku masih mengingatmu. Bukan karena tidak bisa melupakan, tetapi karena memang belum pernah berhenti mendoakan.</div>
-            </div>
-            <button onclick="nextSection(4)" class="btn">Apa yang Membuatku Mengingatmu?</button>
-        </div>
-    </section>
-
-    <!-- Sec 4 -->
-    <section id="sec4">
-        <div class="container">
-            <h2 style="text-align:center; margin-bottom:2rem;">Apa yang Membuatku Tetap Mengingatmu?</h2>
-            <div style="display:grid; gap:1.2rem;">
-                <div class="glass" style="padding:1.8rem; text-align:center;">🌸 Karena senyummu pernah menjadi kenangan yang indah.</div>
-                <div class="glass" style="padding:1.8rem; text-align:center;">🌸 Karena kamu adalah bagian dari masa kecilku.</div>
-                <div class="glass" style="padding:1.8rem; text-align:center;">🌸 Karena sampai sekarang namamu masih terasa akrab di hatiku.</div>
-                <div class="glass" style="padding:1.8rem; text-align:center;">🌸 Karena setiap mengingat masa kecil, kamu selalu ikut hadir.</div>
-                <div class="glass" style="padding:1.8rem; text-align:center;">🌸 Karena perasaan yang baik tidak harus dipaksakan, cukup dijaga dengan tulus.</div>
-            </div>
-            <button onclick="nextSection(5)" class="btn">Boleh aku jujur?</button>
-        </div>
-    </section>
-
-    <!-- Sec 5 -->
-    <section id="sec5">
-        <div class="container">
-            <div class="glass" style="padding:3rem 2rem; text-align:center;">
-                <h2 style="margin-bottom:3rem;">Boleh aku jujur?</h2>
-                <div style="position:relative; height:240px;">
-                    <button id="btn-boleh" onclick="revealTruth()" class="btn">Boleh</button>
-                    <button id="btn-belum" class="btn">Belum</button>
+        <!-- Interactive Moments -->
+        <section id="interactive" class="min-h-screen relative flex items-center justify-center px-6 py-12 overflow-hidden">
+            <div class="max-w-xl mx-auto text-center z-10">
+                <div class="mb-12">
+                    <div onclick="createHeartsBurst()" 
+                         class="inline-flex items-center justify-center w-28 h-28 rounded-full glass cursor-pointer active:scale-95 transition-transform mx-auto mb-6 border border-white/20 select-none">
+                        <span class="text-5xl">❤️</span>
+                    </div>
+                    <p class="text-lg font-light">Klik hati ini berkali-kali...</p>
+                </div>
+                
+                <div class="glass p-8 rounded-2xl max-w-md mx-auto">
+                    <h3 class="text-2xl heading-font mb-4">Setiap detik bersamamu terasa berbeda</h3>
+                    <p class="leading-relaxed opacity-80 text-sm md:text-base">Aku ingin momen ini menjadi awal dari sesuatu yang indah.</p>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Final Section -->
-    <section id="sec-final">
-        <div class="container glass" style="padding:3rem 2rem; text-align:center;">
-            <h1 style="font-size:2.6rem; margin-bottom:2rem;">Chika...</h1>
-            <p style="font-size:1.2rem; line-height:2; margin-bottom:2rem;">
-                Ada satu hal yang sudah lama kusimpan.<br><br>
-                Dari dulu... sampai hari ini...<br>
-                Aku masih menyimpan rasa yang sama kepadamu.
-            </p>
-            <p style="font-size:1.2rem; line-height:1.9;">
-                Aku tidak ingin memaksamu.<br>
-                Aku hanya ingin kamu tahu bahwa selama ini masih ada seseorang yang diam-diam mendoakanmu.
-            </p>
-
-            <div style="margin-top: 3.5rem;">
-                <button onclick="replyToIG()" class="btn btn-reply">
-                    💌 Balas ke Hafiz
-                </button>
-                <p style="margin-top: 2rem; opacity: 0.9; font-size: 1rem;">
-                    Langsung ke DM Instagram
-                </p>
+        <!-- Confession -->
+        <section id="confession" class="min-h-screen flex items-center justify-center relative px-6 py-12 aurora-bg">
+            <div class="max-w-3xl mx-auto text-center z-10">
+                <div class="mb-12">
+                    <h1 onclick="heartRain()" class="heading-font text-5xl md:text-8xl font-bold neon-glow mb-6 select-none">
+                        Inez Chika Meilany
+                    </h1>
+                </div>
+                
+                <div class="space-y-8 text-2xl md:text-5xl font-light leading-tight">
+                    <p class="section-fade">Aku menyukaimu.</p>
+                    <p class="section-fade">Dan aku ingin mengenalmu lebih dekat.</p>
+                    <p class="section-fade text-3xl md:text-6xl font-medium text-pink-200">Maukah kamu memberiku kesempatan?</p>
+                </div>
             </div>
+        </section>
 
-            <div style="margin-top:4rem;">
-                <p style="font-size:1.55rem; color:#f8c1d4;">Terima kasih sudah membaca semuanya.</p>
-                <p style="font-size:2.1rem; margin:1.8rem 0 0.5rem;">Hafiz Ahmad Nurrudin</p>
-                <p style="opacity:0.9;">Semoga Allah selalu menjaga setiap langkahmu, Chika.</p>
+        <!-- Ending -->
+        <section id="ending" class="min-h-screen flex items-center justify-center px-6 py-12 relative">
+            <div class="max-w-md mx-auto text-center w-full">
+                <div class="glass p-8 md:p-12 rounded-2xl border border-white/10">
+                    <div class="text-5xl mb-6">💌</div>
+                    <p class="text-xl mb-2 opacity-70">Dari</p>
+                    <p class="heading-font text-4xl mb-8">Hafiz Ahmad Nurrudin</p>
+                    
+                    <button onclick="openInstagram()" 
+                            class="w-full py-5 text-xl font-medium rounded-2xl bg-gradient-to-r from-pink-400 to-purple-500 active:scale-95 transition-transform shadow-xl shadow-pink-500/30 flex items-center justify-center gap-3 group">
+                        <span>Jawab lewat DM</span>
+                        <i class="fa-brands fa-instagram text-2xl"></i>
+                    </button>
+                </div>
             </div>
+        </section>
+
+        <!-- Floating Music Button -->
+        <div onclick="toggleMusic()" id="music-control"
+             class="fixed bottom-6 left-6 z-50 w-12 h-12 glass rounded-2xl flex items-center justify-center text-2xl cursor-pointer shadow-xl active:scale-95 transition-transform select-none">
+            🎵
         </div>
-    </section>
+    </div>
+
+    <audio id="romantic-audio" loop preload="auto">
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-7.mp3" type="audio/mpeg">
+    </audio>
 
     <script>
-        const canvas = document.getElementById('bg-canvas');
+        // Particle Canvas yang dioptimalkan untuk Mobile
+        const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
-        let particles = [], hearts = [];
-
+        let particles = [];
+        let animationFrameId;
+        
         function resizeCanvas() {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
         }
-
+        
         class Particle {
             constructor() { this.reset(); }
             reset() {
                 this.x = Math.random() * canvas.width;
                 this.y = Math.random() * canvas.height;
-                this.size = Math.random() * 2.8 + 1;
-                this.speedX = Math.random() * 0.6 - 0.3;
+                this.size = Math.random() * 2 + 1; // Diperkecil agar enteng
+                this.speedX = Math.random() * 0.4 - 0.2;
+                this.speedY = Math.random() * 0.4 - 0.2;
+                this.opacity = Math.random() * 0.5 + 0.2;
+                this.hue = Math.random() > 0.5 ? 320 : 270;
             }
-            update() { this.x += this.speedX; this.y += 0.3; if (this.y > canvas.height) this.y = 0; }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+            }
             draw() {
-                ctx.fillStyle = 'rgba(248, 193, 212, 0.7)';
-                ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI*2); ctx.fill();
+                ctx.beginPath();
+                ctx.fillStyle = `hsla(${this.hue}, 90%, 85%, ${this.opacity})`;
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
             }
         }
-
-        function animate() {
+        
+        function initParticles() {
+            particles = [];
+            // Dikurangi ke 50 partikel di HP agar hemat baterai & lancar
+            const count = window.innerWidth < 768 ? 50 : 100;
+            for (let i = 0; i < count; i++) particles.push(new Particle());
+        }
+        
+        function animateParticles() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            particles.forEach(p => { p.update(); p.draw(); });
-            if (Math.random() < 0.1) hearts.push({x: Math.random()*canvas.width, y: canvas.height, size: Math.random()*18+16});
-            hearts = hearts.filter(h => {
-                h.y -= 1.2; h.x += Math.sin(h.y/50)*0.6;
-                ctx.font = `${h.size}px Arial`;
-                ctx.fillStyle = 'rgba(255,105,180,0.75)';
-                ctx.fillText('♡', h.x, h.y);
-                return h.y > -50;
-            });
-            requestAnimationFrame(animate);
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update();
+                particles[i].draw();
+            }
+            animationFrameId = requestAnimationFrame(animateParticles);
         }
-
-        function startLoading() {
-            const texts = ["Halo Chika...", "Ada sesuatu yang sudah lama ingin kusampaikan..."];
-            let idx = 0;
-            const el = document.getElementById('loading-text');
-            const change = setInterval(() => {
-                idx++;
-                if (idx >= texts.length) {
-                    clearInterval(change);
-                    document.getElementById('loading').style.opacity = '0';
-                    setTimeout(() => document.getElementById('loading').style.display = 'none', 1800);
-                    return;
+        
+        // Optimasi Efek Animasi Hati (Menggunakan CSS Animate secara dinamis + requestAnimationFrame)
+        function createFloatingHeart() {
+            if (document.hidden) return; // Jangan bikin elemen jika tab sedang di-minimize
+            const heart = document.createElement('div');
+            heart.className = 'heart-float';
+            heart.textContent = ['❤️', '💖', '💗', '💘'][Math.floor(Math.random()*4)];
+            
+            const startX = Math.random() * 100;
+            heart.style.left = startX + 'vw';
+            
+            const duration = Math.random() * 3000 + 4000; // 4-7 detik
+            document.body.appendChild(heart);
+            
+            let startTime = null;
+            function step(timestamp) {
+                if (!startTime) startTime = timestamp;
+                const progress = timestamp - startTime;
+                const y = (progress / duration) * (window.innerHeight + 100);
+                const xSin = Math.sin(progress / 400) * 20; // Efek goyang meliuk
+                
+                heart.style.transform = `translateY(-${y}px) translateX(${xSin}px)`;
+                heart.style.opacity = 1 - (progress / duration);
+                
+                if (progress < duration) {
+                    requestAnimationFrame(step);
+                } else {
+                    heart.remove();
                 }
-                el.style.opacity = '0';
-                setTimeout(() => { el.textContent = texts[idx]; el.style.opacity = '1'; }, 600);
-            }, 2600);
+            }
+            requestAnimationFrame(step);
         }
-
-        function startTypewriter() {
-            const text = `Dulu...\n\nKita pernah saling mengenal dengan cara yang sederhana.\n\nBahkan pernah menjadi sepasang anak kecil saat masih kelas 3 SD.\n\nMungkin banyak orang akan menyebutnya hanya cinta monyet.\n\nTapi entah kenapa...\n\nPerasaanku tidak benar-benar ikut tumbuh pergi.\n\nYang berubah hanyalah usia kita.\n\nBukan perasaanku.`;
-            const el = document.getElementById('story-text');
-            el.innerHTML = '';
-            let i = 0;
-            const interval = setInterval(() => {
-                if (i < text.length) {
-                    el.innerHTML += text[i] === '\n' ? '<br><br>' : text[i];
-                    i++;
-                } else clearInterval(interval);
-            }, 35);
+        
+        let heartInterval;
+        function startFloatingHearts() {
+            if(heartInterval) clearInterval(heartInterval);
+            heartInterval = setInterval(() => {
+                if (Math.random() > 0.5) createFloatingHeart();
+            }, 600);
         }
-
-        function nextSection(n) {
-            document.querySelectorAll('section').forEach(s => s.style.display = 'none');
-            document.getElementById('sec' + n).style.display = 'flex';
-
-            if (n === 2) setTimeout(startTypewriter, 400);
-            if (n === 3) {
-                setTimeout(() => {
-                    document.querySelectorAll('.timeline-item').forEach((item, i) => {
-                        setTimeout(() => item.classList.add('visible'), i * 420);
-                    });
-                }, 300);
+        
+        function createHeartsBurst() {
+            for (let i = 0; i < 10; i++) {
+                setTimeout(() => createFloatingHeart(), i * 60);
             }
         }
-
-        function initEvilBtn() {
-            const btn = document.getElementById('btn-belum');
-            const move = () => {
-                btn.style.left = (Math.random() * (window.innerWidth - 180) + 30) + 'px';
-                btn.style.top = (80 + Math.random() * 180) + 'px';
-            };
-            btn.addEventListener('touchstart', e => { e.preventDefault(); move(); });
-            btn.addEventListener('mouseenter', move);
-        }
-
-        function revealTruth() {
-            for (let i = 0; i < 140; i++) {
-                setTimeout(() => {
-                    const h = document.createElement('div');
-                    h.textContent = '♡';
-                    h.style.position = 'fixed';
-                    h.style.left = Math.random() * 100 + 'vw';
-                    h.style.top = '-30px';
-                    h.style.fontSize = '22px';
-                    h.style.color = '#ff9ece';
-                    h.style.zIndex = '999';
-                    document.body.appendChild(h);
-                    setTimeout(() => h.remove(), 5000);
-                }, i * 6);
+        
+        function heartRain() {
+            for (let i = 0; i < 25; i++) {
+                setTimeout(() => createFloatingHeart(), i * 40);
             }
-            document.getElementById('sec5').style.display = 'none';
-            document.getElementById('sec-final').style.display = 'flex';
         }
-
-        // Tombol Balas ke IG
-        function replyToIG() {
-            const username = "mas_fizzz.bijr";
-            const igLink = `https://www.instagram.com/direct/new/?username=${username}`;
-            window.open(igLink, '_blank');
+        
+        // Audio handler (Mengatasi auto-block browser mobile)
+        const audio = document.getElementById('romantic-audio');
+        let isPlaying = false;
+        
+        function playMusic() {
+            audio.play().then(() => {
+                isPlaying = true;
+                document.getElementById('music-control').textContent = "🎵";
+            }).catch(e => console.log("Playback diblokir, menunggu interaksi user."));
         }
-
-        window.onload = () => {
+        
+        function toggleMusic() {
+            if (isPlaying) {
+                audio.pause();
+                isPlaying = false;
+                document.getElementById('music-control').textContent = "🔇";
+            } else {
+                playMusic();
+            }
+        }
+        
+        // Alur cerita per baris secara manual agar rapi di layar kecil
+        let storyStep = 1;
+        function nextStory() {
+            storyStep++;
+            const currentStory = document.getElementById(`story-${storyStep}`);
+            if (currentStory) {
+                currentStory.classList.remove('hidden');
+                setTimeout(() => currentStory.classList.add('active'), 50);
+            } else {
+                document.getElementById('next-btn').classList.add('hidden');
+                document.getElementById('interactive').scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+        
+        // Buka Instagram secara aman
+        function openInstagram() {
+            window.location.href = "instagram://user?username=mas_fizzz.bjir";
+            setTimeout(() => {
+                window.open("https://instagram.com/mas_fizzz.bjir", '_blank');
+            }, 500);
+        }
+        
+        // Tombol utama di klik
+        function startJourney() {
+            playMusic();
+            const opening = document.getElementById('opening');
+            opening.style.opacity = '0';
+            
+            setTimeout(() => {
+                opening.classList.add('hidden');
+                document.getElementById('main-content').classList.remove('hidden');
+                
+                // Trigger baris cerita pertama
+                const first = document.getElementById('story-1');
+                first.classList.add('active');
+                
+                // Jalankan background & sistem hati
+                initParticles();
+                animateParticles();
+                startFloatingHearts();
+            }, 700);
+        }
+        
+        // Inisialisasi awal saat web dimuat
+        window.addEventListener('load', () => {
             resizeCanvas();
-            window.addEventListener('resize', resizeCanvas);
-            for (let i = 0; i < 70; i++) particles.push(new Particle());
-            animate();
-            startLoading();
-            initEvilBtn();
-        };
+            
+            // Set volume lebih bersahabat
+            audio.volume = 0.5;
+            
+            // Intersection observer untuk efek memudar (fade-in) section otomatis saat di-scroll
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                    }
+                });
+            }, { threshold: 0.15 });
+            
+            document.querySelectorAll('.section-fade').forEach(el => observer.observe(el));
+        });
+
+        // Handle resize layar pintar (hemat baterai)
+        let resizeTimeout;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                resizeCanvas();
+                initParticles();
+            }, 200);
+        });
     </script>
 </body>
-    </html>
+</html>
